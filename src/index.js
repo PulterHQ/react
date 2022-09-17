@@ -6,12 +6,12 @@ export class Pulter extends Component {
     super(props)
     this.holder = React.createRef()
     this.iframe = React.createRef()
-    this.openModal = this.openModal.bind(this)
     this.isModalShown = false
     this.uuid = this.generateUuid()
 
     this.state = {
-      disabled: true
+      disabled: true,
+      display: 'block'
     }
   }
 
@@ -50,14 +50,17 @@ export class Pulter extends Component {
         }
         if (event.data === 'uploadSuccessful') {
           onSubmit(true)
+          this.setState({ display: 'none' })
         }
         if (event.data.type === 'upload-failed') {
           onClose()
           onSubmit(false)
+          this.setState({ display: 'none' })
         }
         if (typeof event.data === 'object') {
           if (event.data.type && event.data.type === 'submitData') {
             onSubmit(true, event.data.data)
+            this.setState({ display: 'none' })
           }
         }
       },
@@ -97,7 +100,7 @@ export class Pulter extends Component {
           {
             type: 'uploadStepHook',
             data: {
-              rowHook: strHook
+              uploadStepHook: strHook
             }
           },
           '*'
@@ -109,7 +112,7 @@ export class Pulter extends Component {
           {
             type: 'selectHeaderStepHook',
             data: {
-              rowHook: strHook
+              selectHeaderStepHook: strHook
             }
           },
           '*'
@@ -121,7 +124,7 @@ export class Pulter extends Component {
           {
             type: 'matchColumnsStepHook',
             data: {
-              rowHook: strHook
+              matchColumnsStepHook: strHook
             }
           },
           '*'
@@ -145,20 +148,12 @@ export class Pulter extends Component {
           {
             type: 'tableHook',
             data: {
-              rowHook: strHook
+              tableHook: strHook
             }
           },
           '*'
         )
       }
-    }
-  }
-
-  openModal() {
-    if (!this.isModalShown) {
-      this.isModalShown = true
-      this.iframe.current.contentWindow.postMessage('openModal', '*')
-      this.holder.current.style.display = 'block'
     }
   }
 
@@ -175,6 +170,7 @@ export class Pulter extends Component {
     const iframeSrc = `https://portal.pulter.co/?templateId=${templateId}`
 
     const holderStyle = {
+      display: this.state.display,
       zIndex: 2147483647,
       position: 'fixed',
       top: 0,
