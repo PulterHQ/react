@@ -16,7 +16,7 @@ export class Pulter extends Component {
   }
 
   componentDidMount() {
-    const {
+    let {
       isOpen,
       onClose,
       onSubmit,
@@ -35,7 +35,8 @@ export class Pulter extends Component {
       dateFormat,
       maxRecords,
       maxFileSize,
-      autoMapDistance
+      autoMapDistance,
+      dataSync
     } = this.props
 
     window.addEventListener(
@@ -51,16 +52,19 @@ export class Pulter extends Component {
         if (event.data === 'uploadSuccessful') {
           onSubmit(true)
           this.setState({ display: 'none' })
+          isOpen = true
         }
         if (event.data.type === 'upload-failed') {
           onClose()
           onSubmit(false)
           this.setState({ display: 'none' })
+          isOpen = true
         }
         if (typeof event.data === 'object') {
           if (event.data.type && event.data.type === 'submitData') {
             onSubmit(true, event.data.data)
             this.setState({ display: 'none' })
+            isOpen = true
           }
         }
       },
@@ -78,6 +82,7 @@ export class Pulter extends Component {
         {
           type: 'userConfig',
           user: user || userObj,
+          dataSync: dataSync || true,
           data: {
             fields: fields || null,
             autoMapHeaders: autoMapHeaders || true,
